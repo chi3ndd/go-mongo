@@ -21,13 +21,13 @@ type (
 		Database   string
 		Collection string
 		handler    *m.Collection
-		logger     *logrus.Logger
+		Logger     *logrus.Logger
 	}
 )
 
 func (con *Connector) Initiation() error {
 	// Initiation logger
-	con.logger = &logrus.Logger{
+	con.Logger = &logrus.Logger{
 		Out:   os.Stderr,
 		Level: logrus.DebugLevel,
 		Formatter: &prefixed.TextFormatter{
@@ -55,7 +55,7 @@ func (con *Connector) Initiation() error {
 	if err != nil {
 		return err
 	}
-	con.logger.Infof("Initializing connection to MongoDB [%s] - database (%s) - collection (%s)", con.Addr, con.Database, con.Collection)
+	con.Logger.Infof("Initializing connection to MongoDB [%s] - database (%s) - collection (%s)", con.Addr, con.Database, con.Collection)
 	con.handler = client.Database(con.Database).Collection(con.Collection)
 	// Success
 	return nil
