@@ -73,3 +73,8 @@ func (con *Connector) FindMany(filter *bson.D, offset int64, limit *int64, sort 
 	// Success
 	return con.handler.Find(context.TODO(), filter, &opts)
 }
+
+func (con *Connector) CountDocument(filter *bson.D) (int64, error) {
+	// Success
+	return con.handler.CountDocuments(context.TODO(), filter)
+}
