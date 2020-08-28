@@ -78,3 +78,7 @@ func (con *Connector) CountDocument(filter *bson.D) (int64, error) {
 	// Success
 	return con.handler.CountDocuments(context.TODO(), filter)
 }
+
+func (con *Connector) Disconnect() error {
+	return con.handler.Database().Client().Disconnect(context.TODO())
+}
