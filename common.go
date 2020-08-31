@@ -8,59 +8,66 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (con *Connector) InsertOne(document interface{}, validation bool) (*m.InsertOneResult, error) {
+func (con *Connector) InsertOne(database, collection string, document interface{}, validation bool) (*m.InsertOneResult, error) {
 	bypass := !validation
 	opts := options.InsertOneOptions{BypassDocumentValidation: &bypass}
 	// Success
-	return con.handler.InsertOne(context.TODO(), document, &opts)
+	col := con.handler.Database(database).Collection(collection)
+	return col.InsertOne(context.TODO(), document, &opts)
 }
 
-func (con *Connector) InsertMany(documents []interface{}, validation bool, interrupt bool) (*m.InsertManyResult, error) {
+func (con *Connector) InsertMany(database, collection string, documents []interface{}, validation bool, interrupt bool) (*m.InsertManyResult, error) {
 	bypass := !validation
 	opts := options.InsertManyOptions{BypassDocumentValidation: &bypass, Ordered: &interrupt}
 	// Success
-	return con.handler.InsertMany(context.TODO(), documents, &opts)
+	col := con.handler.Database(database).Collection(collection)
+	return col.InsertMany(context.TODO(), documents, &opts)
 }
 
-func (con *Connector) UpdateOne(filter *bson.D, update interface{}, upsert bool) (*m.UpdateResult, error) {
+func (con *Connector) UpdateOne(database, collection string, filter *bson.D, update interface{}, upsert bool) (*m.UpdateResult, error) {
 	opts := options.UpdateOptions{
 		Upsert: &upsert,
 	}
 	// Success
-	return con.handler.UpdateOne(context.TODO(), filter, update, &opts)
+	col := con.handler.Database(database).Collection(collection)
+	return col.UpdateOne(context.TODO(), filter, update, &opts)
 }
 
-func (con *Connector) UpdateMany(filter *bson.D, update interface{}, upsert bool) (*m.UpdateResult, error) {
+func (con *Connector) UpdateMany(database, collection string, filter *bson.D, update interface{}, upsert bool) (*m.UpdateResult, error) {
 	opts := options.UpdateOptions{
 		Upsert: &upsert,
 	}
 	// Success
-	return con.handler.UpdateMany(context.TODO(), filter, update, &opts)
+	col := con.handler.Database(database).Collection(collection)
+	return col.UpdateMany(context.TODO(), filter, update, &opts)
 }
 
-func (con *Connector) DeleteOne(filter *bson.D) (*m.DeleteResult, error) {
+func (con *Connector) DeleteOne(database, collection string, filter *bson.D) (*m.DeleteResult, error) {
 	// Success
-	return con.handler.DeleteOne(context.TODO(), filter)
+	col := con.handler.Database(database).Collection(collection)
+	return col.DeleteOne(context.TODO(), filter)
 }
 
-func (con *Connector) DeleteMany(filter *bson.D) (*m.DeleteResult, error) {
+func (con *Connector) DeleteMany(database, collection string, filter *bson.D) (*m.DeleteResult, error) {
 	// Success
-	return con.handler.DeleteMany(context.TODO(), filter)
+	col := con.handler.Database(database).Collection(collection)
+	return col.DeleteMany(context.TODO(), filter)
 }
 
-func (con *Connector) FindOne(filter *bson.D, offset int64, sort *bson.E) (*m.SingleResult, error) {
+func (con *Connector) FindOne(database, collection string, filter *bson.D, offset int64, sort *bson.E) (*m.SingleResult, error) {
 	opts := options.FindOneOptions{
 		Skip: &offset,
 	}
 	if sort != nil {
 		opts.Sort = bson.D{*sort}
 	}
-	res := con.handler.FindOne(context.TODO(), filter, &opts)
 	// Success
+	col := con.handler.Database(database).Collection(collection)
+	res := col.FindOne(context.TODO(), filter, &opts)
 	return res, res.Err()
 }
 
-func (con *Connector) FindMany(filter *bson.D, offset int64, limit *int64, sort *bson.E) (*m.Cursor, error) {
+func (con *Connector) FindMany(database, collection string, filter *bson.D, offset int64, limit *int64, sort *bson.E) (*m.Cursor, error) {
 	opts := options.FindOptions{
 		Skip: &offset,
 	}
@@ -71,12 +78,14 @@ func (con *Connector) FindMany(filter *bson.D, offset int64, limit *int64, sort 
 		opts.Sort = bson.D{*sort}
 	}
 	// Success
-	return con.handler.Find(context.TODO(), filter, &opts)
+	col := con.handler.Database(database).Collection(collection)
+	return col.Find(context.TODO(), filter, &opts)
 }
 
-func (con *Connector) CountDocument(filter *bson.D) (int64, error) {
+func (con *Connector) CountDocument(database, collection string, filter *bson.D) (int64, error) {
 	// Success
-	return con.handler.CountDocuments(context.TODO(), filter)
+	col := con.handler.Database(database).Collection(collection)
+	return col.CountDocuments(context.TODO(), filter)
 }
 
 func (con *Connector) Disconnect() error {
