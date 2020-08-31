@@ -14,14 +14,12 @@ import (
 
 type (
 	Connector struct {
-		Addr       string
-		Username   string
-		Password   string
-		AuthDB     string
-		Database   string
-		Collection string
-		handler    *m.Collection
-		Logger     *logrus.Logger
+		Addr     string
+		Username string
+		Password string
+		AuthDb   string
+		handler  *m.Client
+		Logger   *logrus.Logger
 	}
 )
 
@@ -44,7 +42,7 @@ func (con *Connector) Initiation() error {
 			options.Credential{
 				Username:   con.Username,
 				Password:   con.Password,
-				AuthSource: con.AuthDB,
+				AuthSource: con.AuthDb,
 			})
 	}
 	client, err := m.NewClient(opts)
@@ -55,8 +53,13 @@ func (con *Connector) Initiation() error {
 	if err != nil {
 		return err
 	}
-	con.Logger.Infof("Initializing connection to MongoDB [%s] - database (%s) - collection (%s)", con.Addr, con.Database, con.Collection)
-	con.handler = client.Database(con.Database).Collection(con.Collection)
+	con.Logger.Infof("Initializing connection to MongoDB [%s] - user: %s", con.Addr, con.Username)
+	con.handler = client
 	// Success
 	return nil
+}
+
+func (con *Connector) Disconnect() error {
+	// Success
+	return con.handler.Disconnect(context.TODO())
 }
