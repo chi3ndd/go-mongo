@@ -89,5 +89,5 @@ func (con *Connector) CountDocument(database, collection string, filter *bson.D)
 }
 
 func (con *Connector) Disconnect() error {
-	return con.handler.Database().Client().Disconnect(context.TODO())
+	return con.handler.Disconnect(context.TODO())
 }
