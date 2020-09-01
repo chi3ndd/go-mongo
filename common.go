@@ -87,7 +87,3 @@ func (con *Connector) CountDocument(database, collection string, filter *bson.D)
 	col := con.handler.Database(database).Collection(collection)
 	return col.CountDocuments(context.TODO(), filter)
 }
-
-func (con *Connector) Disconnect() error {
-	return con.handler.Disconnect(context.TODO())
-}
